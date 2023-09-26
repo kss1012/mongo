@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import project1.mongo.repository.MyDataMongo;
 import project1.mongo.repository.MyDataMongoRepository;
 
@@ -22,7 +23,7 @@ public class MyController {
     @GetMapping("/")
     public String index(Model model){
         model.addAttribute("title","Find Page");
-        model.addAttribute("msg", "MyDataMongo");
+        model.addAttribute("msg", "MyData예제");
         List<MyDataMongo> list = myDataMongoRepository.findAll();
         model.addAttribute("datalist",list);
         return "index";
@@ -35,13 +36,33 @@ public class MyController {
         myDataMongoRepository.save(myDataMongo);
         return "redirect:/";
     }
-
-    @PostMapping("/find")
+    @GetMapping("/find")
     public String find(Model model){
-        model.addAttribute("title","Find Page");
+        model.addAttribute("title", "Find page");
         model.addAttribute("msg","MyData 예제");
         List<MyDataMongo> list = myDataMongoRepository.findAll();
-        model.addAttribute("datalist",list);
+        model.addAttribute("datalist", list);
         return "find";
+    }
+
+    @PostMapping("/find")
+    public String search(@RequestParam("find") String param, Model model) {
+        if (param == "") {
+            return "redirect:/find";
+        } else {
+            model.addAttribute("title", "Find result");
+            model.addAttribute("msg", param + "의 검색 결과");
+            model.addAttribute("value", param);
+           // List<MyDataMongo> list = myDataMongoRepository.findByNameLike(param);
+            List<MyDataMongo> list = myDataMongoRepository.getMyDataMongoByMemoLike(param);
+            model.addAttribute("datalist", list);
+            return "find";
+        }
+    }
+
+    @GetMapping("/view")
+    @ResponseBody
+    public List<MyDataMongo> view(){
+        return myDataMongoRepository.findAll();
     }
 }
