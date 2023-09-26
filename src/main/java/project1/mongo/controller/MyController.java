@@ -21,6 +21,10 @@ public class MyController {
     MyDataMongoRepository myDataMongoRepository;
     @GetMapping("/")
     public String index(Model model){
+        model.addAttribute("title","Find Page");
+        model.addAttribute("msg", "MyDataMongo");
+        List<MyDataMongo> list = myDataMongoRepository.findAll();
+        model.addAttribute("datalist",list);
         return "index";
     }
 
